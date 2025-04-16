@@ -1,5 +1,7 @@
 const connection = require('../data/db')
 
+const url_base_image = "http//localhost:3000/image/"
+
 //index (read)
 function index(req, res) {
 
@@ -8,8 +10,14 @@ function index(req, res) {
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: 'Database query failed' })
 
-        res.json(results)
+        res.json(results.map(movie => {
+
+            const url_image = `${url_base_image}${movie.image}`
+            movie.image = url_image
+            return movie
+        }))
     })
+
 }
 
 //show (read)
@@ -39,6 +47,9 @@ function show(req, res) {
             if (err) return res.status(500).json({ error: 'reviews non found' })
 
             movie.reviews = reviews
+
+            const url_image = `${url_base_image}${movie.image}`
+            movie.image = url_image
 
             res.json(movie)
         })
