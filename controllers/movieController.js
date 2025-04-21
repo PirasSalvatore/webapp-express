@@ -1,6 +1,6 @@
 const connection = require('../data/db')
 
-const url_base_image = "http//localhost:3000/image/"
+const url_base_image = "/image/"
 
 //index (read)
 function index(req, res) {
@@ -59,6 +59,27 @@ function show(req, res) {
 
 //store (create)
 function store(req, res) {
+
+    const id = Number(req.params.id)
+
+    const review = req.body
+
+    const { name, vote, text } = review
+
+
+    const sql = `INSERT INTO movies_db.reviews (movie_id, name, vote, text, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, NOW(), NOW());`
+
+    if (!name || !vote || !text) {
+        return res.status(400).json({ error: 'Missing required fields' })
+    }
+
+    connection.query(sql, [id, name, vote, text], (err, results) => {
+
+        if (err) return res.status(500).json({ error: 'Database query failed' })
+
+        res.status(201).json({ message: 'Review created successfully', reviewId: results.insertId })
+    })
 
 }
 
