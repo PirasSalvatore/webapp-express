@@ -27,12 +27,13 @@ app.use(express.json());
 //using static foulder
 app.use(express.static('public'))
 
-//usging the router
-app.use("/api/v1/movies", movieRouter)
-
+//using the default router
 app.get('/', (req, res) => {
     res.send("welcome to blog server")
 })
+
+//usging the router
+app.use("/api/v1/movies", movieRouter)
 
 //using the middelware
 app.use(serverError)

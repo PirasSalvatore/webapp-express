@@ -40,7 +40,7 @@ function show(req, res) {
 
         const movie = results[0]
 
-        console.log(movie);
+        //console.log(movie)
 
 
         connection.query(sqlReviews, [movie.id], (err, reviews) => {
