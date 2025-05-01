@@ -10,12 +10,17 @@ function index(req, res) {
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({ error: 'Database query failed' })
 
-        res.json(results.map(movie => {
-
+        /**
+         * * Map through the results and update the image URL for each movie
+         * * This assumes that the image field in the database contains the image filename
+         */
+        const movies = results.map(movie => {
             const url_image = `${url_base_image}${movie.image}`
             movie.image = url_image
             return movie
-        }))
+        })
+
+        res.json(movies)
     })
 
 }
@@ -49,6 +54,7 @@ function show(req, res) {
             movie.reviews = reviews
 
             const url_image = `${url_base_image}${movie.image}`
+
             movie.image = url_image
 
             res.json(movie)
@@ -64,15 +70,14 @@ function store(req, res) {
 
     const review = req.body
 
-    const { name, vote, text } = review
+    if (!review) {
+        return res.status(400).json({ error: 'Missing required fields' })
+    }
 
+    const { name, vote, text } = review
 
     const sql = `INSERT INTO movies_db.reviews (movie_id, name, vote, text, created_at, updated_at) 
            VALUES (?, ?, ?, ?, NOW(), NOW());`
-
-    if (!name || !vote || !text) {
-        return res.status(400).json({ error: 'Missing required fields' })
-    }
 
     connection.query(sql, [id, name, vote, text], (err, results) => {
 
@@ -80,16 +85,6 @@ function store(req, res) {
 
         res.status(201).json({ message: 'Review created successfully', reviewId: results.insertId })
     })
-
-}
-
-//update (update)
-function update(req, res) {
-
-}
-
-//partial update (modify)
-function modify(req, res) {
 
 }
 
